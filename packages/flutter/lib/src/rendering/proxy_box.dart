@@ -1660,7 +1660,7 @@ class RenderPhysicalModel extends _RenderPhysicalModelBase<RRect> {
          child: child,
          elevation: elevation,
          color: color,
-         shadowColor: shadowColor
+         shadowColor: shadowColor,
        );
 
   @override
@@ -1802,7 +1802,7 @@ class RenderPhysicalShape extends _RenderPhysicalModelBase<Path> {
          color: color,
          shadowColor: shadowColor,
          clipper: clipper,
-         clipBehavior: clipBehavior
+         clipBehavior: clipBehavior,
        );
 
   @override
@@ -3054,7 +3054,7 @@ class RenderIgnorePointer extends RenderProxyBox {
         'ignoringSemantics',
         _effectiveIgnoringSemantics,
         description: ignoringSemantics == null ? 'implicitly $_effectiveIgnoringSemantics' : null,
-      )
+      ),
     );
   }
 }
@@ -3456,15 +3456,12 @@ class RenderSemanticsGestureHandler extends RenderProxyBox {
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
-    final List<String> gestures = <String>[];
-    if (onTap != null)
-      gestures.add('tap');
-    if (onLongPress != null)
-      gestures.add('long press');
-    if (onHorizontalDragUpdate != null)
-      gestures.add('horizontal scroll');
-    if (onVerticalDragUpdate != null)
-      gestures.add('vertical scroll');
+    final List<String> gestures = <String>[
+      if (onTap != null) 'tap',
+      if (onLongPress != null) 'long press',
+      if (onHorizontalDragUpdate != null) 'horizontal scroll',
+      if (onVerticalDragUpdate != null) 'vertical scroll',
+    ];
     if (gestures.isEmpty)
       gestures.add('<none>');
     properties.add(IterableProperty<String>('gestures', gestures));
@@ -3488,6 +3485,7 @@ class RenderSemanticsAnnotations extends RenderProxyBox {
     bool toggled,
     bool selected,
     bool button,
+    bool link,
     bool header,
     bool textField,
     bool readOnly,
@@ -3500,6 +3498,8 @@ class RenderSemanticsAnnotations extends RenderProxyBox {
     bool hidden,
     bool image,
     bool liveRegion,
+    int maxValueLength,
+    int currentValueLength,
     String label,
     String value,
     String increasedValue,
@@ -3537,6 +3537,7 @@ class RenderSemanticsAnnotations extends RenderProxyBox {
        _toggled = toggled,
        _selected = selected,
        _button = button,
+       _link = link,
        _header = header,
        _textField = textField,
        _readOnly = readOnly,
@@ -3547,6 +3548,8 @@ class RenderSemanticsAnnotations extends RenderProxyBox {
        _scopesRoute = scopesRoute,
        _namesRoute = namesRoute,
        _liveRegion = liveRegion,
+       _maxValueLength = maxValueLength,
+       _currentValueLength = currentValueLength,
        _hidden = hidden,
        _image = image,
        _onDismiss = onDismiss,
@@ -3677,6 +3680,16 @@ class RenderSemanticsAnnotations extends RenderProxyBox {
     markNeedsSemanticsUpdate();
   }
 
+  /// If non-null, sets the [SemanticsNode.isLink] semantic to the given value.
+  bool get link => _link;
+  bool _link;
+  set link(bool value) {
+    if (link == value)
+      return;
+    _link = value;
+    markNeedsSemanticsUpdate();
+  }
+
   /// If non-null, sets the [SemanticsNode.isHeader] semantic to the given value.
   bool get header => _header;
   bool _header;
@@ -3799,6 +3812,28 @@ class RenderSemanticsAnnotations extends RenderProxyBox {
     if (_liveRegion == value)
       return;
     _liveRegion = value;
+    markNeedsSemanticsUpdate();
+  }
+
+  /// If non-null, sets the [SemanticsNode.maxValueLength] semantic to the given
+  /// value.
+  int get maxValueLength => _maxValueLength;
+  int _maxValueLength;
+  set maxValueLength(int value) {
+    if (_maxValueLength == value)
+      return;
+    _maxValueLength = value;
+    markNeedsSemanticsUpdate();
+  }
+
+  /// If non-null, sets the [SemanticsNode.currentValueLength] semantic to the
+  /// given value.
+  int get currentValueLength => _currentValueLength;
+  int _currentValueLength;
+  set currentValueLength(int value) {
+    if (_currentValueLength == value)
+      return;
+    _currentValueLength = value;
     markNeedsSemanticsUpdate();
   }
 
@@ -4337,6 +4372,8 @@ class RenderSemanticsAnnotations extends RenderProxyBox {
       config.isSelected = selected;
     if (button != null)
       config.isButton = button;
+    if (link != null)
+      config.isLink = link;
     if (header != null)
       config.isHeader = header;
     if (textField != null)
@@ -4373,6 +4410,12 @@ class RenderSemanticsAnnotations extends RenderProxyBox {
       config.namesRoute = namesRoute;
     if (liveRegion != null)
       config.liveRegion = liveRegion;
+    if (maxValueLength != null) {
+      config.maxValueLength = maxValueLength;
+    }
+    if (currentValueLength != null) {
+      config.currentValueLength = currentValueLength;
+    }
     if (textDirection != null)
       config.textDirection = textDirection;
     if (sortKey != null)

@@ -413,6 +413,7 @@ void _defineTests() {
             selected: true,
             hidden: true,
             button: true,
+            link: true,
             textField: true,
             readOnly: true,
             focused: true,
@@ -461,6 +462,7 @@ void _defineTests() {
             selected: true,
             hidden: true,
             button: true,
+            link: true,
             textField: true,
             readOnly: true,
             focused: true,
@@ -708,21 +710,17 @@ class _DiffTester {
     final SemanticsTester semanticsTester = SemanticsTester(tester);
 
     TestSemantics createExpectations(List<String> labels) {
-      final List<TestSemantics> children = <TestSemantics>[];
-      for (String label in labels) {
-        children.add(
-          TestSemantics(
-            rect: const Rect.fromLTRB(1.0, 1.0, 2.0, 2.0),
-            label: label,
-          ),
-        );
-      }
-
       return TestSemantics.root(
         children: <TestSemantics>[
           TestSemantics.rootChild(
             rect: TestSemantics.fullScreen,
-            children: children,
+            children: <TestSemantics>[
+              for (String label in labels)
+                TestSemantics(
+                  rect: const Rect.fromLTRB(1.0, 1.0, 2.0, 2.0),
+                  label: label,
+                ),
+            ],
           ),
         ],
       );
